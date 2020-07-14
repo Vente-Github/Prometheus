@@ -1,5 +1,5 @@
 include:
-  - project: 'redmic-project/gitlab-ci-templates'
+  - project: 'cabildo-tf/vente/gitlab-ci-templates'
     ref: master
     file: '/deployment.yml'
 
