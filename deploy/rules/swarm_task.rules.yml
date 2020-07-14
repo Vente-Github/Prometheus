@@ -1,0 +1,32 @@
+groups:
+- name: swarm_task
+  rules:
+  - alert: task_high_cpu_usage_90
+    expr: sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_task_name=~".+"}[1m]))
+      BY (container_label_com_docker_swarm_task_name, container_label_com_docker_swarm_node_id)
+      * 100 > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: '{{$labels.container_label_com_docker_swarm_task_name}} on ''{{
+        $labels.container_label_com_docker_swarm_node_id}}'' CPU usage is at {{$value | printf "%.1f"}}%'
+      summary: CPU alert for Swarm task '{{$labels.container_label_com_docker_swarm_task_name}}' on
+        '{{$labels.container_label_com_docker_swarm_node_id}}'
+
+  - record: task_memory_usage_percent
+    expr: 100 * (sum(container_memory_rss{container_label_com_docker_swarm_task_name=~".+"})
+      BY (container_label_com_docker_swarm_task_name, container_label_com_docker_swarm_node_id) /
+      sum(container_spec_memory_limit_bytes{container_label_com_docker_swarm_task_name=~".+"})
+      BY (container_label_com_docker_swarm_task_name, container_label_com_docker_swarm_node_id))
+
+  - alert: task_high_memory_usage_90
+    expr: task_memory_usage_percent > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: '{{$labels.container_label_com_docker_swarm_task_name}} on ''{{
+        $labels.container_label_com_docker_swarm_node_id}}'' memory usage is at {{$value | printf "%.1f"}}%'
+      summary: Memory alert for Swarm task '{{$labels.container_label_com_docker_swarm_task_name}}' on
+        '{{$labels.container_label_com_docker_swarm_node_id}}'
