@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.7'
 
 services:
   prometheus:
@@ -10,12 +10,3 @@ services:
         reservations:
           cpus: '${RESOURCES_RESERVATIONS_CPUS:-0.1}'
           memory: ${RESOURCES_RESERVATIONS_MEMORY:-256M}
-
-volumes:
-  data-vol:
-    name: ${DATA_VOL_NAME}
-
-configs:
-  node_rules:
-    name: ${NODE_RULES_NAME}
-    file: ./rules/swarm_node.rules.dev.yml

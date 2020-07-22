@@ -1,6 +1,7 @@
 #!/bin/sh -e
 
-cat ${CONFIG_PATH}/${INITIAL_CONFIG_FILENAME} > /tmp/prometheus.yml
+CONFIG_PATH=/etc/prometheus
+PROMETHEUS_TEMPLATE_FILENAME="${CONFIG_PATH}/prometheus.yml.tmpl"
 
 if [ ${JOBS:+x} ]
 then
@@ -9,14 +10,13 @@ then
 		echo "adding job ${job}"
 
 		jobParams=$(echo "${job}" | sed -r 's/(.*):([[:digit:]]+)(\/[^;]*)?(;([[:digit:]]+)?)?(;([[:digit:]]+)?)?$/\1 \2 \3 \5 \7/')
-
 		serviceName=$(echo "${jobParams}" | cut -d " " -f1)
 		port=$(echo "${jobParams}" | cut -d " " -f2)
 		metricsPath=$(echo "${jobParams}" | cut -d " " -f3)
 		scrapeInterval=$(echo "${jobParams}" | cut -d " " -f4)
 		scrapeTimeout=$(echo "${jobParams}" | cut -d " " -f5)
 
-		cat >>/tmp/prometheus.yml <<EOF
+		cat >> "${PROMETHEUS_TEMPLATE_FILENAME}" <<EOF
 
   - job_name: '${serviceName}'
     ${scrapeInterval:+scrape_interval: ${scrapeInterval}s}
@@ -34,7 +34,7 @@ fi
 if ls ${CONFIG_PATH}/*.rules.yml > /dev/null 2> /dev/null
 then
 	echo "Adding rules file"
-	echo "rule_files:" >> /tmp/prometheus.yml
+	echo "rule_files:" >> "${PROMETHEUS_TEMPLATE_FILENAME}"
 
 	for f in ${CONFIG_PATH}/*.rules.yml
 	do
@@ -42,13 +42,25 @@ then
 		then
 			filename=$( basename "${f}" )
 			echo "adding rules ${filename}"
-			echo '  - "'${filename}'"' >> /tmp/prometheus.yml
+			echo '  - "'${filename}'"' >> "${PROMETHEUS_TEMPLATE_FILENAME}"
 		fi
 	done
 fi
 
-mv /tmp/prometheus.yml ${CONFIG_PATH}/${FINAL_CONFIG_FILENAME}
+mv "${PROMETHEUS_TEMPLATE_FILENAME}" "${CONFIG_PATH}/prometheus.yml"
 
-set -- /bin/prometheus "$@"
+cat "${CONFIG_PATH}/prometheus.yml"
 
-exec "$@"
+# Force all args into prometheus
+if [[ "$1" = 'prometheus' ]]; then
+  shift
+fi
+
+exec prometheus --web.console.libraries="/usr/share/prometheus/console_libraries" \
+	  --web.console.templates="/usr/share/prometheus/consoles" \
+	  --config.file="${CONFIG_FILE:-/etc/prometheus/prometheus.yml}" \
+	  --storage.tsdb.path="${STORAGE_TSDB_PATH:-/prometheus}" \
+      --storage.tsdb.retention.time="${STORAGE_TSDB_RETENTION_TIME:-30d}" \
+      --storage.tsdb.retention.size="${STORAGE_TSDB_RETENTION_SIZE:-8GB}" \
+      --storage.tsdb.wal-compression \
+      "$@"
