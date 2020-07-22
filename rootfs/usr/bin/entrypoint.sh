@@ -58,6 +58,8 @@ fi
 
 exec prometheus --web.console.libraries="/usr/share/prometheus/console_libraries" \
 	  --web.console.templates="/usr/share/prometheus/consoles" \
+	  --web.external-url="${WEB_EXTERNAL_URL:-http://localhost:${PORT}}" \
+	  --web.route-prefix="${WEB_ROUTE_PREFIX:-/}" \
 	  --config.file="${CONFIG_FILE:-/etc/prometheus/prometheus.yml}" \
 	  --storage.tsdb.path="${STORAGE_TSDB_PATH:-/prometheus}" \
       --storage.tsdb.retention.time="${STORAGE_TSDB_RETENTION_TIME:-30d}" \
