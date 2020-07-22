@@ -12,7 +12,7 @@ services:
       monitoring-net:
       traefik-net:
     volumes:
-      - prometeus-data-vol:${STORAGE_TSDB_PATH}
+      - prometheus-data-vol:${STORAGE_TSDB_PATH}
     configs:
       - source: scheduled_job_rules
         target: /etc/prometheus/scheduled_job.rules.yml
