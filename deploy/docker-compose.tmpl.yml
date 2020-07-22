@@ -8,7 +8,6 @@ services:
       STORAGE_TSDB_RETENTION_SIZE:
       STORAGE_TSDB_PATH:
       WEB_ROUTE_PREFIX:
-      PROMETHEUS_PATH:
       JOBS:
     networks:
       monitoring-net:
