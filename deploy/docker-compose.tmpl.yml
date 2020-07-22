@@ -41,8 +41,7 @@ services:
         traefik.http.routers.prometheus.rule: Host(`${PUBLIC_HOSTNAME}`) && PathPrefix(`${PROMETHEUS_PATH}`)
         traefik.http.services.prometheus.loadbalancer.server.port: '${PORT}'
         traefik.http.middlewares.prometheus-auth.basicauth.users: ${UI_AUTH}
-        traefik.http.middlewares.prometheus-stripprefix.stripprefix.prefixes: ${PROMETHEUS_PATH}
-        traefik.http.routers.prometheus.middlewares: prometheus-stripprefix,prometheus-auth
+        traefik.http.routers.prometheus.middlewares: prometheus-auth
         traefik.http.routers.prometheus.service: prometheus
 
 networks:
