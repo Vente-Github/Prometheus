@@ -11,6 +11,10 @@ then
 
 		jobParams=$(echo "${job}" | sed -r 's/(.*):([[:digit:]]+)(\/[^;]*)?(;([[:digit:]]+)?)?(;([[:digit:]]+)?)?$/\1 \2 \3 \5 \7/')
 		serviceName=$(echo "${jobParams}" | cut -d " " -f1)
+		if echo "${serviceName}" | grep -qvE "\."
+		then
+			serviceName=$(echo "tasks.${serviceName}")
+		fi
 		port=$(echo "${jobParams}" | cut -d " " -f2)
 		metricsPath=$(echo "${jobParams}" | cut -d " " -f3)
 		scrapeInterval=$(echo "${jobParams}" | cut -d " " -f4)
@@ -24,7 +28,7 @@ then
     ${metricsPath:+metrics_path: '${metricsPath}'}
     dns_sd_configs:
       - names:
-          - 'tasks.${serviceName}'
+          - '${serviceName}'
         type: 'A'
         port: ${port}
 EOF
