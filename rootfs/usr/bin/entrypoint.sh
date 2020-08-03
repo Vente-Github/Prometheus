@@ -10,10 +10,12 @@ then
 		echo "adding job ${job}"
 
 		jobParams=$(echo "${job}" | sed -r 's/(.*):([[:digit:]]+)(\/[^;]*)?(;([[:digit:]]+)?)?(;([[:digit:]]+)?)?$/\1 \2 \3 \5 \7/')
-		serviceName=$(echo "${jobParams}" | cut -d " " -f1)
-		if echo "${serviceName}" | grep -qvE "\."
+		jobName=$(echo "${jobParams}" | cut -d " " -f1)
+		if echo "${jobName}" | grep -qvE "\."
 		then
 			serviceName=$(echo "tasks.${serviceName}")
+		else
+			serviceName=$(echo "${jobName}")
 		fi
 		port=$(echo "${jobParams}" | cut -d " " -f2)
 		metricsPath=$(echo "${jobParams}" | cut -d " " -f3)
@@ -22,7 +24,7 @@ then
 
 		cat >> "${PROMETHEUS_TEMPLATE_FILENAME}" <<EOF
 
-  - job_name: '${serviceName}'
+  - job_name: '${jobName}'
     ${scrapeInterval:+scrape_interval: ${scrapeInterval}s}
     ${scrapeTimeout:+scrape_timeout: ${scrapeTimeout}s}
     ${metricsPath:+metrics_path: '${metricsPath}'}
