@@ -13,7 +13,7 @@ then
 		jobName=$(echo "${jobParams}" | cut -d " " -f1)
 		if echo "${jobName}" | grep -qvE "\."
 		then
-			serviceName=$(echo "tasks.${serviceName}")
+			serviceName=$(echo "tasks.${jobName}")
 		else
 			serviceName=$(echo "${jobName}")
 		fi
