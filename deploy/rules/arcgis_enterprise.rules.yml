@@ -2,10 +2,10 @@ groups:
 - name: ArcGIS Enterprise
   rules:
   - alert: ArcGIS Enterprise component DOWN
-    expr: windows_service_state{name=~".*arcgis.*"} == 0
+    expr: wmi_service_state{name=~".*arcgis.*",state="running"} == 0
     for: 3m
     labels:
-      severity: high
+      severity: critical
     annotations:
       summary: "Service {{ $labels.name }} is down"
-      description: "Service {{ $labels.name }} on instance {{ $labels.instance }} has been down for more than 3 minutes."
+      description: "Service {{ $labels.name }} on instance {{ $labels.job }} has been down for more than 3 minutes."
