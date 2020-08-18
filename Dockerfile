@@ -1,4 +1,5 @@
-FROM prom/prometheus:v2.19.2
+ARG PROMETHEUS_VERSION=v2.19.2
+FROM prom/prometheus:${PROMETHEUS_VERSION}
 
 USER root
 COPY rootfs /
