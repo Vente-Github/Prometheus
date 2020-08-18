@@ -25,6 +25,8 @@ services:
         target: /etc/prometheus/swarm_service.rules.yml
       - source: swarm_task_rules
         target: /etc/prometheus/swarm_task.rules.yml
+      - source: arcgis_enterprise_rules
+        target: /etc/prometheus/arcgis_enterprise.rules.yml
     healthcheck:
       test: wget --spider -q http://localhost:${PORT}/-/healthy
       interval: ${HEALTHCHECK_INTERVAL:-1m}
@@ -75,6 +77,10 @@ configs:
   swarm_task_rules:
     name: ${SWARM_TASK_RULES_NAME:-swam_task_rules}
     file: ./rules/swarm_task.rules.yml
+
+  arcgis_enterprise_rules:
+    name: ${ARCGIS_ENTERPRISE_RULES_NAME:-arcgis_enterprise_rules}
+    file: ./rules/arcgis_enterprise.rules.yml
 
 volumes:
   prometheus-data-vol:
