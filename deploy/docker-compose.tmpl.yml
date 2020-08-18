@@ -86,7 +86,7 @@ configs:
 
   windows_server_rules:
     name: ${WINDOWS_SERVER_RULES_NAME:-windows_server_rules}
-    file: ./rules/windows_server_rules.rules.yml
+    file: ./rules/windows_server.rules.yml
 
 volumes:
   prometheus-data-vol:
