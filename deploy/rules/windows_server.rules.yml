@@ -1,14 +1,14 @@
 groups:
 - name: Windows Server
   rules:
-	- alert: CpuUsage
-	  expr: 100 - (avg by (job) (irate(wmi_cpu_time_total{mode="idle"}[2m])) * 100) > 80
-	  for: 5m
-	  labels:
-	    severity: warning
-	  annotations:
-	    summary: CPU alert for host '{{$labels.job}}'
-	    description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}%
+  - alert: CpuUsage
+    expr: 100 - (avg by (job) (irate(wmi_cpu_time_total{mode="idle"}[2m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: CPU alert for host '{{$labels.job}}'
+      description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}%
 
   # Alert on hosts that have exhausted all available physical memory
   - alert: MemoryExhausted
@@ -53,6 +53,7 @@ groups:
       description: The drive {{ $labels.volume }} is expected to fill up within 7 days. Currently {{ $value | humanize }}% is available
 
 - name: Network Alerts
+  rules:
   - alert: NetInterfaceUsage
     expr: rate(wmi_net_bytes_total[2m]) * 8 / wmi_net_current_bandwidth * 100 > 95
     for: 10m
