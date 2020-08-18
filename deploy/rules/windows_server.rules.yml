@@ -7,6 +7,57 @@ groups:
 	  labels:
 	    severity: warning
 	  annotations:
-	    summary: CPU alert for instance '{{$labels.job}}'
-	    description: Server {{$labels.job}} CPU usage is at {{$value | printf "%.1f"}}%
-      
+	    summary: CPU alert for host '{{$labels.job}}'
+	    description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}%
+
+  # Alert on hosts that have exhausted all available physical memory
+  - alert: MemoryExhausted
+    expr: wmi_os_physical_memory_free_bytes == 0
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: Out of memory for host '{{$labels.job}}'
+      description: Host {{$labels.job}} has exhausted all available physical memory
+
+  # Alert on hosts with greater than 90% memory usage
+  - alert: MemoryLow
+    expr: 100 - (100 * wmi_os_physical_memory_free_bytes / wmi_cs_physical_memory_bytes) > 90
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: Memory alert for host '{{$labels.job}}' 
+      description: Memory usage for host {{ $labels.job }} is at {{$value | printf "%.1f"}}%
+
+- name: Windows Disk Alerts
+  rules:
+  # Sends an alert when disk space usage is above 95%
+  - alert: DiskSpaceUsage
+    expr: 100 - 100 * (wmi_logical_disk_free_bytes / wmi_logical_disk_size_bytes) > 95
+    for: 10m
+    labels:
+      severity: high
+    annotations:
+      summary: Disk space usage for host '{{ $labels.job }}'
+      description: Disk Space on drive {{ $labels.volume }} is at {{ $value | printf "%.1f"}}%
+
+  # Alerts on disks with over 85% space usage predicted to fill within the next 7 days
+  - alert: DiskFilling
+    expr: 100 * (wmi_logical_disk_free_bytes / wmi_logical_disk_size_bytes) < 20 and predict_linear(wmi_logical_disk_free_bytes[6h], 7 * 24 * 3600) < 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: Disk full in 7 days for host '{{ $labels.job }}'
+      description: The drive {{ $labels.volume }} is expected to fill up within 7 days. Currently {{ $value | humanize }}% is available
+
+- name: Network Alerts
+  - alert: NetInterfaceUsage
+    expr: rate(wmi_net_bytes_total[2m]) * 8 / wmi_net_current_bandwidth * 100 > 95
+    for: 10m
+    labels:
+      severity: high
+    annotations:
+      summary: Network interface usage for host '{{ $labels.job }}'
+      description: The network traffic for interface {{ $labels.nic }} is {{ $value }}
