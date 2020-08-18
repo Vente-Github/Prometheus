@@ -26,7 +26,7 @@ services:
       - source: swarm_task_rules
         target: /etc/prometheus/swarm_task.rules.yml
     healthcheck:
-      test: wget --spider -q http://localhost:${PORT}/metrics
+      test: wget --spider -q http://localhost:${PORT}/-/healthy
       interval: ${HEALTHCHECK_INTERVAL:-1m}
       timeout: ${HEALTHCHECK_TIMEOUT:-30s}
       retries: ${HEALTHCHECK_RETRIES:-10}
