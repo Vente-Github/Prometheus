@@ -8,9 +8,6 @@ include:
   - project: 'redmic-project/gitlab-ci-templates'
     ref: master
     file: '/deployment-custom-image.yml'
-  - project: 'cabildo-tf/vente/gitlab-ci-templates'
-    ref: master
-    file: '/maintenance.yml'
 
 stages:
   - test
@@ -18,7 +15,6 @@ stages:
   - package
   - post-package
   - deploy
-  - maintenance
 
 variables:
   PROJECT_PARENT_NAME: monitoring
