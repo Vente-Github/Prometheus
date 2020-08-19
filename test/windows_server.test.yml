@@ -23,3 +23,22 @@ tests:
                 exp_annotations:
                   summary: "CPU alert for host 'apo34wv.teide.int'"
                   description: "CPU usage for host apo34wv.teide.int is at 100.0% for more than 5 minutes"
+
+    - interval: 15s
+      input_series:
+          - series: 'wmi_os_physical_memory_free_bytes{instance="172.21.10.33:9182",job="apo33wv.teide.int"}'
+            values: '0+0x150'
+      alert_rule_test:  
+          - eval_time: 9m
+            alertname: MemoryExhausted
+            exp_alerts: []
+          - eval_time: 11m
+            alertname: MemoryExhausted
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  job: apo33wv.teide.int
+                  instance: 172.21.10.33:9182
+                exp_annotations:
+                  summary: "Out of memory for host 'apo33wv.teide.int'"
+                  description: "Host apo33wv.teide.int has exhausted all available physical memory for more than 10 minutes"
