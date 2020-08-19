@@ -5,7 +5,8 @@ do
 	if [ -e "$f" ]
 	then
 		filename=$( basename "$f" )
-		docker run --rm -v $(pwd)/deploy/rules/:/tmp dnanexus/promtool:1.0 \
-			check rules /tmp/${filename}
+		docker run --rm -v $(pwd)/deploy/rules:/rules \
+			--entrypoint /bin/promtool prom/prometheus \
+			check rules /rules/${filename}
 	fi
 done

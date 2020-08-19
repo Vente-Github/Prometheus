@@ -1,14 +1,14 @@
 groups:
 - name: Windows Server
   rules:
-  - alert: CpuUsage
+  - alert: WindowsServerCpuUsage
     expr: 100 - (avg by (job) (irate(wmi_cpu_time_total{mode="idle"}[2m])) * 100) > 80
     for: 5m
     labels:
-      severity: warning
+      severity: critical
     annotations:
       summary: CPU alert for host '{{$labels.job}}'
-      description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}%
+      description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}% for more than 5 minutes 
 
   # Alert on hosts that have exhausted all available physical memory
   - alert: MemoryExhausted
