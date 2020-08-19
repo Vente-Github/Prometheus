@@ -1,21 +1,15 @@
-# This is the main input for unit testing.
-# Only this file is passed as command line argument.
-
 rule_files:
     - /rules/windows_server.rules.yml
 
 evaluation_interval: 30s
 
 tests:
-    # Test 1.
     - interval: 15s
-      # Series data.
       input_series:
           - series: 'wmi_cpu_time_total{core="0,0",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
             values: '554689+0x75'
           - series: 'wmi_cpu_time_total{core="0,1",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
             values: '555755+0x75'
-      # Unit test for alerting rules.
       alert_rule_test:  
           - eval_time: 5m
             alertname: WindowsServerCpuUsage
