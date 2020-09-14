@@ -12,10 +12,10 @@ tests:
             values: '555755+0x75'
       alert_rule_test:  
           - eval_time: 5m
-            alertname: WindowsServerCpuUsage
+            alertname: Windows server CPU usage over 80%
             exp_alerts: []
           - eval_time: 6m
-            alertname: WindowsServerCpuUsage
+            alertname: Windows server CPU usage over 80%
             exp_alerts:
               - exp_labels:
                   severity: critical
@@ -27,13 +27,13 @@ tests:
     - interval: 15s
       input_series:
           - series: 'wmi_os_physical_memory_free_bytes{instance="172.21.10.33:9182",job="apo33wv.teide.int"}'
-            values: '0+0x150'
+            values: '0+0x10'
       alert_rule_test:  
-          - eval_time: 9m
-            alertname: MemoryExhausted
+          - eval_time: 45s
+            alertname: Memory exhausted
             exp_alerts: []
-          - eval_time: 11m
-            alertname: MemoryExhausted
+          - eval_time: 2m
+            alertname: Memory exhausted
             exp_alerts:
               - exp_labels:
                   severity: critical

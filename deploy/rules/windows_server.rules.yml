@@ -33,7 +33,7 @@ groups:
 - name: Windows disk alerts
   rules:
   # Sends an alert when disk space usage is above 95%
-  - alert: DiskSpaceUsage
+  - alert: Disk space usage
     expr: 100 - 100 * (wmi_logical_disk_free_bytes / wmi_logical_disk_size_bytes) > 95
     for: 10m
     labels:
@@ -54,7 +54,7 @@ groups:
 
 - name: Network alerts
   rules:
-  - alert: NetInterfaceUsage
+  - alert: Net interface usage
     expr: rate(wmi_net_bytes_total[2m]) * 8 / wmi_net_current_bandwidth * 100 > 95
     for: 10m
     labels:
