@@ -12,10 +12,10 @@ tests:
             values: '555755+0x75'
       alert_rule_test:  
           - eval_time: 5m
-            alertname: Windows server CPU usage over 80%
+            alertname: Windows server CPU usage over 80 percent
             exp_alerts: []
           - eval_time: 6m
-            alertname: Windows server CPU usage over 80%
+            alertname: Windows server CPU usage over 80 percent
             exp_alerts:
               - exp_labels:
                   severity: critical

@@ -1,7 +1,7 @@
 groups:
 - name: swarm_task
   rules:
-  - alert: Task high CPU usage over 90%
+  - alert: Task high CPU usage over 90 percent
     expr: sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_task_name=~".+"}[1m]))
       BY (container_label_com_docker_swarm_task_name, container_label_com_docker_swarm_node_id)
       * 100 > 90
@@ -20,7 +20,7 @@ groups:
       sum(container_spec_memory_limit_bytes{container_label_com_docker_swarm_task_name=~".+"})
       BY (container_label_com_docker_swarm_task_name, container_label_com_docker_swarm_node_id))
 
-  - alert: Task high memory usage over 90%
+  - alert: Task high memory usage over 90 percent
     expr: task_memory_usage_percent > 90
     for: 5m
     labels:
