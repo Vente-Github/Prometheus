@@ -1,7 +1,7 @@
 groups:
-- name: ArcGIS Enterprise
+- name: arcgis_enterprise
   rules:
-  - alert: ArcGIS Enterprise component down
+  - alert: arcgis_enterprise_component_is_down
     expr: wmi_service_state{name=~".*arcgis.*",state="running"} == 0
     for: 3m
     labels:
