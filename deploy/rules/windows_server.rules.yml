@@ -1,7 +1,7 @@
 groups:
 - name: Windows Server
   rules:
-  - alert: WindowsServerCpuUsage
+  - alert: Windows server CPU usage over 80%
     expr: 100 - (avg by (job) (irate(wmi_cpu_time_total{mode="idle"}[2m])) * 100) > 80
     for: 5m
     labels:
@@ -11,9 +11,9 @@ groups:
       description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}% for more than 5 minutes 
 
   # Alert on hosts that have exhausted all available physical memory
-  - alert: MemoryExhausted
+  - alert: Memory exhausted
     expr: wmi_os_physical_memory_free_bytes == 0
-    for: 10m
+    for: 1m
     labels:
       severity: critical
     annotations:
@@ -21,16 +21,16 @@ groups:
       description: Host {{$labels.job}} has exhausted all available physical memory for more than 10 minutes
 
   # Alert on hosts with greater than 90% memory usage
-  - alert: MemoryLow
+  - alert: Memory low
     expr: 100 - (100 * wmi_os_physical_memory_free_bytes / wmi_cs_physical_memory_bytes) > 90
-    for: 10m
+    for: 5m
     labels:
       severity: warning
     annotations:
       summary: Memory alert for host '{{$labels.job}}' 
       description: Memory usage for host {{ $labels.job }} is at {{$value | printf "%.1f"}}%
 
-- name: Windows Disk Alerts
+- name: Windows disk alerts
   rules:
   # Sends an alert when disk space usage is above 95%
   - alert: DiskSpaceUsage
@@ -43,7 +43,7 @@ groups:
       description: Disk Space on drive {{ $labels.volume }} is at {{ $value | printf "%.1f"}}%
 
   # Alerts on disks with over 85% space usage predicted to fill within the next 7 days
-  - alert: DiskFilling
+  - alert: Disk filling
     expr: 100 * (wmi_logical_disk_free_bytes / wmi_logical_disk_size_bytes) < 20 and predict_linear(wmi_logical_disk_free_bytes[6h], 7 * 24 * 3600) < 0
     for: 10m
     labels:
@@ -52,7 +52,7 @@ groups:
       summary: Disk full in 7 days for host '{{ $labels.job }}'
       description: The drive {{ $labels.volume }} is expected to fill up within 7 days. Currently {{ $value | humanize }}% is available
 
-- name: Network Alerts
+- name: Network alerts
   rules:
   - alert: NetInterfaceUsage
     expr: rate(wmi_net_bytes_total[2m]) * 8 / wmi_net_current_bandwidth * 100 > 95

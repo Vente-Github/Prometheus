@@ -1,7 +1,7 @@
 groups:
 - name: swarm_service
   rules:
-  - alert: TargetServiceInRestartLoop
+  - alert: Target service in restart loop
     expr: avg without(instance)(changes(process_start_time_seconds[1h]) > bool 3) > 0
     for: 10m
     labels:
@@ -9,7 +9,7 @@ groups:
     annotations:
       description: Service '{{$labels.job}}' has been restarted at least 3 times since last hour
 
-  - alert: TargetServiceIsDown
+  - alert: Target service is down
     expr: up == 0
     for: 5m
     labels:

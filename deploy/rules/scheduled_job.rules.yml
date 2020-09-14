@@ -1,7 +1,7 @@
 groups:
 - name: scheduled_job
   rules:
-  - alert: BackupDatabaseNotCreated
+  - alert: Backup database not created
     expr: time() - backup_created_date_seconds > 129600
     for: 1h
     labels:
