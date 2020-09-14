@@ -12,10 +12,10 @@ tests:
             values: '555755+0x75'
       alert_rule_test:  
           - eval_time: 5m
-            alertname: Windows server CPU usage over 80 percent
+            alertname: windows_server_cpu_usage_over_80
             exp_alerts: []
           - eval_time: 6m
-            alertname: Windows server CPU usage over 80 percent
+            alertname: windows_server_cpu_usage_over_80
             exp_alerts:
               - exp_labels:
                   severity: critical
@@ -30,10 +30,10 @@ tests:
             values: '0+0x10'
       alert_rule_test:  
           - eval_time: 45s
-            alertname: Memory exhausted
+            alertname: memory_exhausted
             exp_alerts: []
           - eval_time: 2m
-            alertname: Memory exhausted
+            alertname: memory_exhausted
             exp_alerts:
               - exp_labels:
                   severity: critical
