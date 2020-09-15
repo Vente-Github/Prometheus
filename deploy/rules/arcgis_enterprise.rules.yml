@@ -9,3 +9,14 @@ groups:
     annotations:
       summary: "Service {{ $labels.name }} is down"
       description: "Service {{ $labels.name }} on instance {{ $labels.job }} has been down for more than 3 minutes."
+
+- name: arcgis_rest_services
+  rules:
+  - alert: arcgis_rest_service_is_down
+    expr: arcgis_service_state{state="started",configured_state="started"} == 0
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service {{ $labels.service_name }} in folder {{ $labels.folder }} is down"
+      description: "Service {{ $labels.service_name }} in folder {{ $labels.folder }} has been down for more than 3 minutes."
