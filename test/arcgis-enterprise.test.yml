@@ -1,0 +1,29 @@
+rule_files:
+    - /rules/arcgis_enterprise.rules.yml
+
+evaluation_interval: 30s
+
+tests:
+    - interval: 15s
+      input_series:
+          - series: 'arcgis_service_state{configured_state="started",state="stopped",folder="Hosted",instance="10.0.1.104:8000",job="arcgis-prometheus",service_name="Pruebafgdb",type="FeatureServer"}'
+            values: '1+0x26'
+      alert_rule_test:
+          - eval_time: 2m
+            alertname: arcgis_rest_service_is_down
+            exp_alerts: []
+          - eval_time: 6m
+            alertname: arcgis_rest_service_is_down
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  job: arcgis-prometheus
+                  configured_state: started
+                  folder: Hosted
+                  instance: 10.0.1.104:8000
+                  service_name: Pruebafgdb
+                  state: stopped
+                  type: FeatureServer
+                exp_annotations:
+                  summary: "Service 'Pruebafgdb' in folder 'Hosted' is down"
+                  description: "Service 'Pruebafgdb' in folder 'Hosted' has been down for more than 3 minutes."

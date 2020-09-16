@@ -5,6 +5,7 @@ do
 	if [ -e "$f" ]
 	then
 		filename=$( basename "$f" )
+		echo "${filename}"
 		docker run --rm -v $(pwd)/test:/test -v $(pwd)/deploy/rules:/rules \
 				--entrypoint /bin/promtool prom/prometheus \
 				test rules /test/${filename}
