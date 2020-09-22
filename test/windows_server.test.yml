@@ -6,9 +6,9 @@ evaluation_interval: 30s
 tests:
     - interval: 15s
       input_series:
-          - series: 'wmi_cpu_time_total{core="0,0",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
+          - series: 'windows_cpu_time_total{core="0,0",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
             values: '554689+0x75'
-          - series: 'wmi_cpu_time_total{core="0,1",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
+          - series: 'windows_cpu_time_total{core="0,1",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
             values: '555755+0x75'
       alert_rule_test:  
           - eval_time: 5m
@@ -26,7 +26,7 @@ tests:
 
     - interval: 15s
       input_series:
-          - series: 'wmi_os_physical_memory_free_bytes{instance="172.21.10.33:9182",job="apo33wv.teide.int"}'
+          - series: 'windows_os_physical_memory_free_bytes{instance="172.21.10.33:9182",job="apo33wv.teide.int"}'
             values: '0+0x10'
       alert_rule_test:  
           - eval_time: 45s
