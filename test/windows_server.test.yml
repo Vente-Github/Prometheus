@@ -42,3 +42,27 @@ tests:
                 exp_annotations:
                   summary: "Out of memory for host 'apo33wv.teide.int'"
                   description: "Host apo33wv.teide.int has exhausted all available physical memory for more than 10 minutes"
+
+    - interval: 15s
+      input_series:
+          - series: windows_iis_worker_request_errors_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272",status_code="500"}
+            values: '10+10x100'
+          - series: windows_iis_worker_request_errors_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272",status_code="200"}
+            values: '1+0x10'
+      alert_rule_test:  
+          - eval_time: 45s
+            alertname: iis_requests_5xx_high
+            exp_alerts: []
+          - eval_time: 2m
+            alertname: iis_requests_5xx_high
+            exp_alerts:
+              - exp_labels:
+                  severity: high
+                  job: apo34wv.teide.int
+                  instance: 172.21.10.34:9182
+                  app: ArcGISWebAdaptorAppPool v4.0
+                  pid: 44272
+                  status_code: 500
+                exp_annotations:
+                  summary: "API 5xxs are 10% of HTTP requests for host 'apo34wv.teide.int'"
+                  description: "API 5xxs are 10% of HTTP requests for host 'apo34wv.teide.int'"
