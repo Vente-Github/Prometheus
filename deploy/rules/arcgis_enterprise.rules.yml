@@ -19,6 +19,14 @@ groups:
       summary: "Service 'Web Adaptor' is down"
       description: "Service 'Web Adaptor' on instance '{{ $labels.job }}' has been down for more than 3 minutes."
 
+  - alert: arcgis_license_expiration
+    expr: count(argis_expiration_license_seconds - time() <  51840000) > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "ArcGIS License expiration in 60 days"
+      description: "{{ .value }} ArcGIS license will expiration in next 60 days"
+
 - name: arcgis_rest_services
   rules:
   - alert: arcgis_rest_service_is_down
