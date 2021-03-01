@@ -21,11 +21,12 @@ groups:
 
   - alert: arcgis_license_expiration
     expr: count(argis_expiration_license_seconds - time() <  51840000) > 0
+    for: 60m
     labels:
       severity: critical
     annotations:
-      summary: "ArcGIS License expiration in 60 days"
-      description: "{{ .value }} ArcGIS license will expiration in next 60 days"
+      summary: "ArcGIS License expiration in next days"
+      description: "{{ $value }} ArcGIS licenses will expiration in next days"
 
 - name: arcgis_rest_services
   rules:

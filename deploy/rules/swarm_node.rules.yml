@@ -13,7 +13,7 @@ groups:
 
   - alert: node_memory_usage
     expr: sum(((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes)
-      * ON(instance) GROUP_LEFT(node_name) node_meta * 100) BY (node_name) > 90
+      * ON(instance) GROUP_LEFT(node_name) node_meta * 100) BY (node_name) > 80
     for: 5m
     labels:
       severity: warning
@@ -26,7 +26,7 @@ groups:
       node_filesystem_free_bytes{mountpoint!~"/var/lib/docker/.*"}) * 100 /
       node_filesystem_size_bytes{mountpoint!~"/var/lib/docker/.*"}) *
       ON(instance) GROUP_LEFT(node_name) node_meta > 85
-    for: 5m
+    for: 10m
     labels:
       severity: critical
     annotations:
