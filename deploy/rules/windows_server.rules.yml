@@ -1,7 +1,7 @@
 groups:
 - name: windows_server
   rules:
-  - alert: windows_server_cpu_usage_over_90
+  - alert: windows_server_cpu_usage
     expr: 100 - (avg by (job) (irate(windows_cpu_time_total{mode="idle"}[2m])) * 100) > 90
     for: 5m
     labels:
