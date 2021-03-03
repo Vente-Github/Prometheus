@@ -1,40 +1,38 @@
-version: '3.5'
+version: '3.7'
 
 services:
   prometheus:
-    image: ${IMAGE_NAME:-prom/prometheus}:${IMAGE_TAG:-latest}
-    entrypoint: ${CONFIG_PATH}/${ENTRYPOINT_FILENAME}
+    image: ${IMAGE_NAME}:${IMAGE_TAG:-latest}
     command:
-      - --config.file=${CONFIG_PATH}/${FINAL_CONFIG_FILENAME}
-      - --storage.tsdb.path=${DATA_PATH}
-      - --storage.tsdb.retention.time=${STORAGE_TSDB_RETENTION_TIME}
-      - --storage.tsdb.retention.size=${STORAGE_TSDB_RETENTION_SIZE}
+      - '--web.enable-admin-api'
     environment:
-      CONFIG_PATH:
-      INITIAL_CONFIG_FILENAME:
-      FINAL_CONFIG_FILENAME:
+      STORAGE_TSDB_RETENTION_TIME:
+      STORAGE_TSDB_RETENTION_SIZE:
+      STORAGE_TSDB_PATH:
+      WEB_ROUTE_PREFIX:
+      WEB_EXTERNAL_URL: https://${PUBLIC_HOSTNAME}${PROMETHEUS_PATH}
+      PROMETHEUS_PATH:
       JOBS:
     networks:
-      metric-net:
+      monitoring-net:
       traefik-net:
     volumes:
-      - data-vol:${DATA_PATH}
+      - prometheus-data-vol:${STORAGE_TSDB_PATH}
     configs:
-      - source: entrypoint-config
-        target: ${CONFIG_PATH}/${ENTRYPOINT_FILENAME}
-        mode: 0555
-      - source: prometheus-config
-        target: ${CONFIG_PATH}/${INITIAL_CONFIG_FILENAME}
-      - source: node_rules
-        target: /etc/prometheus/swarm_node.rules.yml
-      - source: service_rules
-        target: /etc/prometheus/swarm_service.rules.yml
-      - source: task_rules
-        target: /etc/prometheus/swarm_task.rules.yml
       - source: scheduled_job_rules
         target: /etc/prometheus/scheduled_job.rules.yml
+      - source: swarm_node_rules
+        target: /etc/prometheus/swarm_node.rules.yml
+      - source: swarm_service_rules
+        target: /etc/prometheus/swarm_service.rules.yml
+      - source: swarm_task_rules
+        target: /etc/prometheus/swarm_task.rules.yml
+      - source: arcgis_enterprise_rules
+        target: /etc/prometheus/arcgis_enterprise.rules.yml
+      - source: windows_server_rules
+        target: /etc/prometheus/windows_server.rules.yml
     healthcheck:
-      test: wget --spider -q http://localhost:${PORT}
+      test: wget --spider -q http://localhost:${PORT}/-/healthy
       interval: ${HEALTHCHECK_INTERVAL:-1m}
       timeout: ${HEALTHCHECK_TIMEOUT:-30s}
       retries: ${HEALTHCHECK_RETRIES:-10}
@@ -53,14 +51,14 @@ services:
         traefik.http.services.prometheus.loadbalancer.server.port: '${PORT}'
         traefik.http.middlewares.prometheus-auth.basicauth.users: ${UI_AUTH}
         traefik.http.middlewares.prometheus-stripprefix.stripprefix.prefixes: ${PROMETHEUS_PATH}
-        traefik.http.routers.prometheus.middlewares: prometheus-stripprefix,prometheus-auth
+        traefik.http.routers.prometheus.middlewares: prometheus-auth,prometheus-stripprefix
         traefik.http.routers.prometheus.service: prometheus
 
 networks:
-  metric-net:
-    name: ${METRIC_NET_NAME:-metric-net}
-    driver: ${METRIC_NET_DRIVER:-overlay}
-    attachable: ${METRIC_NET_ATTACHABLE:-true}
+  monitoring-net:
+    name: ${MONITORING_NET_NAME:-monitoring-net}
+    driver: ${MONITORING_NET_DRIVER:-overlay}
+    attachable: ${MONITORING_NET_ATTACHABLE:-true}
 
   traefik-net:
     name: ${TRAEFIK_NET_NAME:-traefik-net}
@@ -68,30 +66,30 @@ networks:
     external: true
 
 configs:
-  entrypoint-config:
-    name: ${ENTRYPOINT_CONFIG_NAME:-prometheus-entrypoint}
-    file: ./conf/entrypoint.sh
-
-  prometheus-config:
-    name: ${PROMETHEUS_CONFIG_NAME:-prometheus-config}
-    file: ./conf/prometheus.yml
-
-  service_rules:
-    name: ${SERVICE_RULES_NAME:-service_rules}
-    file: ./rules/swarm_service.rules.yml
-
-  task_rules:
-    name: ${TASK_RULES_NAME:-task_rules}
-    file: ./rules/swarm_task.rules.yml
-
   scheduled_job_rules:
     name: ${SCHEDULED_JOB_RULES_NAME:-scheduled_job_rules}
     file: ./rules/scheduled_job.rules.yml
 
-  elasticsearch_rules:
-    name: ${ELASTICSEARCH_RULES_NAME:-elasticsearch_rules}
-    file: ./rules/elasticsearch.rules.yml
+  swarm_node_rules:
+    name: ${SWARM_NODE_RULES_NAME:-swarm_node_rules}
+    file: ./rules/swarm_node.rules.yml
 
-  kafka_rules:
-    name: ${KAFKA_RULES_NAME:-kafka_rules}
-    file: ./rules/kafka.rules.yml
+  swarm_service_rules:
+    name: ${SWARM_SERVICE_RULES_NAME:-swam_service_rules}
+    file: ./rules/swarm_service.rules.yml
+
+  swarm_task_rules:
+    name: ${SWARM_TASK_RULES_NAME:-swam_task_rules}
+    file: ./rules/swarm_task.rules.yml
+
+  arcgis_enterprise_rules:
+    name: ${ARCGIS_ENTERPRISE_RULES_NAME:-arcgis_enterprise_rules}
+    file: ./rules/arcgis_enterprise.rules.yml
+
+  windows_server_rules:
+    name: ${WINDOWS_SERVER_RULES_NAME:-windows_server_rules}
+    file: ./rules/windows_server.rules.yml
+
+volumes:
+  prometheus-data-vol:
+    name: ${PROMETHEUS_DATA_VOL_NAME:-prometheus-data-vol}

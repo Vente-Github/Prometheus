@@ -1,11 +1,8 @@
-version: '3.5'
+version: '3.7'
 
 services:
   prometheus:
     deploy:
-      placement:
-        constraints:
-          - node.role == worker
       resources:
         limits:
           cpus: '${RESOURCES_LIMITS_CPUS:-1}'
@@ -13,17 +10,3 @@ services:
         reservations:
           cpus: '${RESOURCES_RESERVATIONS_CPUS:-0.1}'
           memory: ${RESOURCES_RESERVATIONS_MEMORY:-512M}
-
-volumes:
-  data-vol:
-    name: ${DATA_VOL_NAME}
-    driver: 'cloudstor:aws'
-    driver_opts:
-      backing: relocatable
-      size: ${PROMETHEUS_VOL_SIZE:-10}
-      ebstype: ${PROMETHEUS_VOL_EBS_TYPE:-gp2}
-
-configs:
-  node_rules:
-    name: ${NODE_RULES_NAME}
-    file: ./rules/swarm_node.rules.prod.yml

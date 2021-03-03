@@ -1,0 +1,68 @@
+rule_files:
+    - /rules/windows_server.rules.yml
+
+evaluation_interval: 30s
+
+tests:
+    - interval: 15s
+      input_series:
+          - series: 'windows_cpu_time_total{core="0,0",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
+            values: '554689+0x75'
+          - series: 'windows_cpu_time_total{core="0,1",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
+            values: '555755+0x75'
+      alert_rule_test:  
+          - eval_time: 5m
+            alertname: windows_server_cpu_usage
+            exp_alerts: []
+          - eval_time: 6m
+            alertname: windows_server_cpu_usage
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  job: apo34wv.teide.int
+                exp_annotations:
+                  summary: "CPU alert for host 'apo34wv.teide.int'"
+                  description: "CPU usage for host apo34wv.teide.int is at 100.0% for more than 5 minutes"
+
+    - interval: 15s
+      input_series:
+          - series: 'windows_os_physical_memory_free_bytes{instance="172.21.10.33:9182",job="apo33wv.teide.int"}'
+            values: '0+0x10'
+      alert_rule_test:  
+          - eval_time: 45s
+            alertname: memory_exhausted
+            exp_alerts: []
+          - eval_time: 2m
+            alertname: memory_exhausted
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  job: apo33wv.teide.int
+                  instance: 172.21.10.33:9182
+                exp_annotations:
+                  summary: "Out of memory for host 'apo33wv.teide.int'"
+                  description: "Host apo33wv.teide.int has exhausted all available physical memory for more than 10 minutes"
+
+    - interval: 15s
+      input_series:
+          - series: windows_iis_worker_request_errors_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272",status_code="500"}
+            values: '10+10x100'
+          - series: windows_iis_worker_request_errors_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272",status_code="200"}
+            values: '1+0x10'
+      alert_rule_test:  
+          - eval_time: 45s
+            alertname: iis_requests_5xx_high
+            exp_alerts: []
+          - eval_time: 2m
+            alertname: iis_requests_5xx_high
+            exp_alerts:
+              - exp_labels:
+                  severity: high
+                  job: apo34wv.teide.int
+                  instance: 172.21.10.34:9182
+                  app: ArcGISWebAdaptorAppPool v4.0
+                  pid: 44272
+                  status_code: 500
+                exp_annotations:
+                  summary: "API 5xxs are 10% of HTTP requests for host 'apo34wv.teide.int'"
+                  description: "API 5xxs are 10% of HTTP requests for host 'apo34wv.teide.int'"

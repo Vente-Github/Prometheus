@@ -1,0 +1,40 @@
+groups:
+- name: arcgis_enterprise
+  rules:
+  - alert: arcgis_enterprise_component_is_down
+    expr: windows_service_state{name=~".*arcgis.*",state="running"} == 0
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service '{{ $labels.name }}' is down"
+      description: "Service '{{ $labels.name }}' on instance '{{ $labels.job }}' has been down for more than 3 minutes."
+
+  - alert: arcgis_enterprise_component_web_adaptor_is_down
+    expr: windows_service_state{name="w3svc",state="running"} == 0
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service 'Web Adaptor' is down"
+      description: "Service 'Web Adaptor' on instance '{{ $labels.job }}' has been down for more than 3 minutes."
+
+  - alert: arcgis_license_expiration
+    expr: count(argis_expiration_license_seconds - time() <  51840000) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "ArcGIS License expiration in next days"
+      description: "{{ $value }} ArcGIS licenses will expiration in next days"
+
+- name: arcgis_rest_services
+  rules:
+  - alert: arcgis_rest_service_is_down
+    expr: arcgis_service_state{configured_state="started",state="stopped"} == 1
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service '{{ $labels.service_name }}' in folder '{{ $labels.folder }}' is down"
+      description: "Service '{{ $labels.service_name }}' in folder '{{ $labels.folder }}' has been down for more than 3 minutes."

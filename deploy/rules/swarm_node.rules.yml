@@ -8,17 +8,17 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: Swarm node {{$labels.node_name}} CPU usage is at {{$value | printf "%.1f"}}%
+      description: Swarm node '{{$labels.node_name}}' CPU usage is at {{$value | printf "%.1f"}}%
       summary: CPU alert for Swarm node '{{$labels.node_name}}'
 
   - alert: node_memory_usage
     expr: sum(((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes)
-      * ON(instance) GROUP_LEFT(node_name) node_meta * 100) BY (node_name) > 90
+      * ON(instance) GROUP_LEFT(node_name) node_meta * 100) BY (node_name) > 80
     for: 5m
     labels:
       severity: warning
     annotations:
-      description: Swarm node {{$labels.node_name}} memory usage is at {{$value | printf "%.1f"}}%
+      description: Swarm node '{{$labels.node_name}}' memory usage is at {{$value | printf "%.1f"}}%
       summary: Memory alert for Swarm node '{{$labels.node_name}}'
 
   - alert: node_disk_usage
@@ -26,11 +26,11 @@ groups:
       node_filesystem_free_bytes{mountpoint!~"/var/lib/docker/.*"}) * 100 /
       node_filesystem_size_bytes{mountpoint!~"/var/lib/docker/.*"}) *
       ON(instance) GROUP_LEFT(node_name) node_meta > 85
-    for: 5m
+    for: 10m
     labels:
       severity: critical
     annotations:
-      description: Swarm node {{$labels.node_name}} disk {{$labels.mountpoint}} usage is at {{$value | printf "%.1f"}}%
+      description: Swarm node '{{$labels.node_name}}' disk {{$labels.mountpoint}} usage is at {{$value | printf "%.1f"}}%
       summary: Disk '{{$labels.mountpoint}}' alert for Swarm node '{{$labels.node_name}}'
 
   - alert: node_disk_fill_rate_6h
@@ -40,5 +40,5 @@ groups:
     labels:
       severity: critical
     annotations:
-      description: Swarm node {{$labels.node_name}} disk {{$labels.mountpoint}} is going to fill up in 6h
+      description: Swarm node '{{$labels.node_name}}' disk {{$labels.mountpoint}} is going to fill up in 6h
       summary: Disk '{{$labels.mountpoint}}' fill alert for Swarm node '{{$labels.node_name}}'

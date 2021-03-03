@@ -1,0 +1,71 @@
+rule_files:
+    - /rules/arcgis_enterprise.rules.yml
+
+evaluation_interval: 30s
+
+tests:
+    - interval: 15s
+      input_series:
+          - series: 'arcgis_service_state{configured_state="started",state="stopped",folder="Hosted",instance="10.0.1.104:8000",job="arcgis-prometheus",service_name="Pruebafgdb",type="FeatureServer"}'
+            values: '1+0x26'
+      alert_rule_test:
+          - eval_time: 2m
+            alertname: arcgis_rest_service_is_down
+            exp_alerts: []
+          - eval_time: 6m
+            alertname: arcgis_rest_service_is_down
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  job: arcgis-prometheus
+                  configured_state: started
+                  folder: Hosted
+                  instance: 10.0.1.104:8000
+                  service_name: Pruebafgdb
+                  state: stopped
+                  type: FeatureServer
+                exp_annotations:
+                  summary: "Service 'Pruebafgdb' in folder 'Hosted' is down"
+                  description: "Service 'Pruebafgdb' in folder 'Hosted' has been down for more than 3 minutes."
+
+    - interval: 15s
+      input_series:
+          - series: 'windows_service_state{instance="172.21.10.33:9182",job="apo33wv.teide.int",name="arcgis data store",state="running"}'
+            values: '0+0x460'
+      alert_rule_test:
+          - eval_time: 2m
+            alertname: arcgis_enterprise_component_is_down
+            exp_alerts: []
+          - eval_time: 6m
+            alertname: arcgis_enterprise_component_is_down
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  instance: 172.21.10.33:9182
+                  job: apo33wv.teide.int
+                  name: arcgis data store
+                  state: running
+                exp_annotations:
+                  summary: "Service 'arcgis data store' is down"
+                  description: "Service 'arcgis data store' on instance 'apo33wv.teide.int' has been down for more than 3 minutes."
+
+    - interval: 15s
+      input_series:
+          - series: 'windows_service_state{instance="172.21.10.33:9182",job="apo33wv.teide.int",name="w3svc",state="running"}'
+            values: '0+0x460'
+      alert_rule_test:
+          - eval_time: 2m
+            alertname: arcgis_enterprise_component_web_adaptor_is_down
+            exp_alerts: []
+          - eval_time: 6m
+            alertname: arcgis_enterprise_component_web_adaptor_is_down
+            exp_alerts:
+              - exp_labels:
+                  severity: critical
+                  instance: 172.21.10.33:9182
+                  job: apo33wv.teide.int
+                  name: w3svc
+                  state: running
+                exp_annotations:
+                  summary: "Service 'Web Adaptor' is down"
+                  description: "Service 'Web Adaptor' on instance 'apo33wv.teide.int' has been down for more than 3 minutes."

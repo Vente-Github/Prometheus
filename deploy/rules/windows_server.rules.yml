@@ -1,0 +1,75 @@
+groups:
+- name: windows_server
+  rules:
+  - alert: windows_server_cpu_usage
+    expr: 100 - (avg by (job) (irate(windows_cpu_time_total{mode="idle"}[2m])) * 100) > 90
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: CPU alert for host '{{$labels.job}}'
+      description: CPU usage for host {{$labels.job}} is at {{$value | printf "%.1f"}}% for more than 5 minutes 
+
+  # Alert on hosts that have exhausted all available physical memory
+  - alert: memory_exhausted
+    expr: windows_os_physical_memory_free_bytes == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Out of memory for host '{{$labels.job}}'
+      description: Host {{$labels.job}} has exhausted all available physical memory for more than 10 minutes
+
+  # Alert on hosts with greater than 90% memory usage
+  - alert: memory_low
+    expr: 100 - (100 * windows_os_physical_memory_free_bytes / windows_cs_physical_memory_bytes) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Memory alert for host '{{$labels.job}}' 
+      description: Memory usage for host {{ $labels.job }} is at {{$value | printf "%.1f"}}%
+
+- name: windows_disk_alerts
+  rules:
+  # Sends an alert when disk space usage is above 95%
+  - alert: disk_space_usage
+    expr: 100 - 100 * (windows_logical_disk_free_bytes / windows_logical_disk_size_bytes) > 85
+    for: 10m
+    labels:
+      severity: high
+    annotations:
+      summary: Disk space usage for host '{{ $labels.job }}'
+      description: Disk Space on drive {{ $labels.volume }} is at {{ $value | printf "%.1f"}}%
+
+  # Alerts on disks with over 85% space usage predicted to fill within the next 7 days
+  - alert: disk_filling
+    expr: 100 * (windows_logical_disk_free_bytes / windows_logical_disk_size_bytes) < 20 and predict_linear(windows_logical_disk_free_bytes[6h], 7 * 24 * 3600) < 0
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: Disk full in 7 days for host '{{ $labels.job }}'
+      description: The drive {{ $labels.volume }} is expected to fill up within 7 days. Currently {{ $value | humanize }}% is available
+
+- name: network_alerts
+  rules:
+  - alert: net_interface_usage
+    expr: rate(windows_net_bytes_total[2m]) * 8 / windows_net_current_bandwidth * 100 > 95
+    for: 10m
+    labels:
+      severity: high
+    annotations:
+      summary: Network interface usage for host '{{ $labels.job }}'
+      description: The network traffic for interface {{ $labels.nic }} is {{ $value }}
+
+- name: iis_alerts
+  rules:
+  - alert: iis_requests_5xx_high
+    expr: rate(windows_iis_worker_request_errors_total{status_code=~"5.*"}[5m]) > .1 * rate(windows_iis_worker_request_errors_total[5m])
+    for: 1m
+    labels:
+      severity: high
+    annotations:
+      summary: API 5xxs are 10% of HTTP requests for host '{{ $labels.job }}'
+      description: API 5xxs are 10% of HTTP requests for host '{{ $labels.job }}'

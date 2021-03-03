@@ -1,14 +1,23 @@
 include:
   - project: 'redmic-project/gitlab-ci-templates'
     ref: master
+    file: '/packaging.yml'
+  - project: 'cabildo-tf/vente/gitlab-ci-templates'
+    ref: master
     file: '/deployment.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/deployment-custom-image.yml'
 
 stages:
   - test
+  - pre-package
+  - package
+  - post-package
   - deploy
 
 variables:
-  PROJECT_PARENT_NAME: metric
+  PROJECT_PARENT_NAME: monitoring
 
 check-rules:
   stage: test
@@ -21,10 +30,20 @@ check-rules:
   script:
     - ./check-rules.sh
 
+test-rules:
+  stage: test
+  image: ${DOCKER_IMAGE}
+  variables:
+    DOCKER_IMAGE: docker:stable
+    DIND_IMAGE: docker:dind
+  services:
+    - ${DIND_IMAGE}
+  script:
+    - ./test-rules.sh
+
 .deploy:
   variables:
     STACK: ${PROJECT_PARENT_NAME}
     SERVICES_TO_CHECK: ${PROJECT_PARENT_NAME}_${CI_PROJECT_NAME}
-    STATUS_CHECK_DELAY: 200
   environment:
-    url: https://${CI_PROJECT_NAME}.${PUBLIC_HOSTNAME}
+    url: http://${PUBLIC_HOSTNAME}/${CI_PROJECT_NAME}
