@@ -21,7 +21,7 @@ groups:
 
   - alert: arcgis_license_expiration
     expr: count(argis_expiration_license_seconds - time() <  51840000) > 0
-    for: 5m
+    for: 30m
     labels:
       severity: warning
     annotations:
