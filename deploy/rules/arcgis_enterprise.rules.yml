@@ -28,6 +28,23 @@ groups:
       summary: "ArcGIS License expiration in next days"
       description: "{{ $value }} ArcGIS licenses will expiration in next days"
 
+  - alert: incremental_backup_arcgis_enterprise_not_created
+    expr: time() - arcgis_backup_created_date_seconds{type="incremental"} > 691200
+    for: 1h
+    labels:
+      severity: warning
+    annotations:
+      summary: "Incremental backup for 'ArcGIS Enterprise' delayed"
+      description: Incremental backup for 'ArcGIS Enterprise' delayed for {{humanizeDuration $value}}
+
+  - alert: full_backup_arcgis_enterprise_not_created
+    expr: time() - arcgis_backup_created_date_seconds{type="full"} > 2678400
+    for: 1h
+    labels:
+      severity: warning
+    annotations:
+      description: Full backup for 'ArcGIS Enterprise' database delayed for {{humanizeDuration $value}}
+
 - name: arcgis_rest_services
   rules:
   - alert: arcgis_rest_service_is_down
