@@ -69,3 +69,4 @@ tests:
                 exp_annotations:
                   summary: "Service 'Web Adaptor' is down"
                   description: "Service 'Web Adaptor' on instance 'apo33wv.teide.int' has been down for more than 3 minutes."
+
