@@ -20,13 +20,30 @@ groups:
       description: "Service 'Web Adaptor' on instance '{{ $labels.job }}' has been down for more than 3 minutes."
 
   - alert: arcgis_license_expiration
-    expr: count(argis_expiration_license_seconds - time() <  51840000) > 0
-    for: 5m
+    expr: count(argis_expiration_license_seconds{can_expire="True"} - time() <  51840000) > 0
+    for: 30m
     labels:
       severity: warning
     annotations:
       summary: "ArcGIS License expiration in next days"
       description: "{{ $value }} ArcGIS licenses will expiration in next days"
+
+  - alert: incremental_backup_arcgis_enterprise_not_created
+    expr: time() - arcgis_backup_created_date_seconds{type="incremental"} > 691200
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Incremental backup for 'ArcGIS Enterprise' delayed"
+      description: Incremental backup for 'ArcGIS Enterprise' delayed for {{humanizeDuration $value}}
+
+  - alert: full_backup_arcgis_enterprise_not_created
+    expr: time() - arcgis_backup_created_date_seconds{type="full"} > 2678400
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: Full backup for 'ArcGIS Enterprise' database delayed for {{humanizeDuration $value}}
 
 - name: arcgis_rest_services
   rules:
