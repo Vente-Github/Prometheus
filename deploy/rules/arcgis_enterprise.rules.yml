@@ -46,7 +46,7 @@ groups:
       description: Full backup for 'ArcGIS Enterprise' database delayed for {{humanizeDuration $value}}
 
   - alert: reconcile_arcgis_db_not_executed
-    expr: time() - arcgis_reconcile_db_executed_date_seconds{type="full"} > 90000
+    expr: time() - arcgis_reconcile_db_executed_date_seconds > 90000
     for: 15m
     labels:
       severity: warning
