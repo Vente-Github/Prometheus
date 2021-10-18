@@ -2,9 +2,9 @@ groups:
 - name: scheduled_job
   rules:
   - alert: backup_database_not_created
-    expr: time() - backup_created_date_seconds > 129600
+    expr: time() - backup_db_created_date_seconds > 129600
     for: 1h
     labels:
       severity: warning
     annotations:
-      description: Backup for '{{$labels.label}}' database delayed for {{humanizeDuration $value}}
+      description: Backup for '{{$labels.label}}' database delayed for {{humanizeDuration $value}} or failed
