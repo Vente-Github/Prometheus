@@ -2,7 +2,7 @@ groups:
 - name: scheduled_job
   rules:
   - alert: backup_database_not_created
-    expr: time() - backup_db_created_date_seconds > 129600
+    expr: backup_db < 1 or time() - backup_db_created_date_seconds > 129600
     for: 1h
     labels:
       severity: warning
