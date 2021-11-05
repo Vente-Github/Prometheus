@@ -10,7 +10,7 @@ tests:
             values: '554689+0x75'
           - series: 'windows_cpu_time_total{core="0,1",instance="172.21.10.34:9182",job="apo34wv.teide.int",mode="idle"}'
             values: '555755+0x75'
-      alert_rule_test:  
+      alert_rule_test:
           - eval_time: 5m
             alertname: windows_server_cpu_usage
             exp_alerts: []
@@ -28,7 +28,7 @@ tests:
       input_series:
           - series: 'windows_os_physical_memory_free_bytes{instance="172.21.10.33:9182",job="apo33wv.teide.int"}'
             values: '0+0x10'
-      alert_rule_test:  
+      alert_rule_test:
           - eval_time: 45s
             alertname: memory_exhausted
             exp_alerts: []
@@ -42,44 +42,3 @@ tests:
                 exp_annotations:
                   summary: "Out of memory for host 'apo33wv.teide.int'"
                   description: "Host apo33wv.teide.int has exhausted all available physical memory for more than 10 minutes"
-
-    - interval: 15s
-      input_series:
-          - series: windows_iis_worker_requests_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272"}
-            values: '10+1x100'
-          - series: windows_iis_worker_request_errors_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272",status_code="500"}
-            values: '10+1x5'
-      alert_rule_test:  
-          - eval_time: 45s
-            alertname: iis_requests_5xx_high
-            exp_alerts: []
-          - eval_time: 2m
-            alertname: iis_requests_5xx_high
-            exp_alerts:
-              - exp_labels:
-                  severity: high
-                  job: apo34wv.teide.int
-                exp_annotations:
-                  summary: "API 5xxs are 5% of HTTP requests for host 'apo34wv.teide.int'"
-                  description: "API 5xxs are 5% of HTTP requests for host 'apo34wv.teide.int'"
-
-
-    - interval: 15s
-      input_series:
-          - series: windows_iis_worker_requests_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272"}
-            values: '10+1x100'
-          - series: windows_iis_worker_request_errors_total{app="ArcGISWebAdaptorAppPool v4.0",instance="172.21.10.34:9182",job="apo34wv.teide.int",pid="44272",status_code="404"}
-            values: '10+1x5'
-      alert_rule_test:  
-          - eval_time: 45s
-            alertname: iis_requests_4xx_high
-            exp_alerts: []
-          - eval_time: 2m
-            alertname: iis_requests_4xx_high
-            exp_alerts:
-              - exp_labels:
-                  severity: high
-                  job: apo34wv.teide.int
-                exp_annotations:
-                  summary: "API 4xxs are 5% of HTTP requests for host 'apo34wv.teide.int'"
-                  description: "API 4xxs are 5% of HTTP requests for host 'apo34wv.teide.int'"
