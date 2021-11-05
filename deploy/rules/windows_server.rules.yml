@@ -27,7 +27,7 @@ groups:
     labels:
       severity: warning
     annotations:
-      summary: Memory alert for host '{{$labels.job}}' 
+      summary: Memory alert for host '{{$labels.job}}'
       description: Memory usage for host {{ $labels.job }} is at {{$value | printf "%.1f"}}%
 
 - name: windows_disk_alerts
@@ -63,22 +63,3 @@ groups:
       summary: Network interface usage for host '{{ $labels.job }}'
       description: The network traffic for interface {{ $labels.nic }} is {{ $value }}
 
-- name: iis_alerts
-  rules:
-  - alert: iis_requests_4xx_high
-    expr: sum(rate(windows_iis_worker_request_errors_total{status_code=~"4.*"}[1m])) by (job) / sum(rate(windows_iis_worker_requests_total[1m])) by (job) * 100 > 5 
-    for: 1m
-    labels:
-      severity: high
-    annotations:
-      summary: API 4xxs are 5% of HTTP requests for host '{{ $labels.job }}'
-      description: API 4xxs are 5% of HTTP requests for host '{{ $labels.job }}'
-
-  - alert: iis_requests_5xx_high
-    expr: sum(rate(windows_iis_worker_request_errors_total{status_code=~"5.*"}[1m])) by (job)/ sum(rate(windows_iis_worker_requests_total[1m])) by (job) * 100 > 5 
-    for: 1m
-    labels:
-      severity: high
-    annotations:
-      summary: API 5xxs are 5% of HTTP requests for host '{{ $labels.job }}'
-      description: API 5xxs are 5% of HTTP requests for host '{{ $labels.job }}'
